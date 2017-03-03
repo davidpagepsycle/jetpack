@@ -80,10 +80,20 @@ describe( 'NavigationSettings', () => {
 			const publicizeProps = Object.assign( {}, testProps, {
 				userCanManageModules: false,
 				isSubscriber: false,
-				isContributor: false,
+				userCanPublish: true,
 				isModuleActivated: m => 'sharedaddy' === m
 			} );
 			expect( shallow( <NavigationSettings { ...publicizeProps } /> ).find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing' ].includes( item ) ) ).to.be.true;
+		} );
+
+		it( 'show Sharing if Publicize is active', () => {
+			const publicizeProps = Object.assign( {}, testProps, {
+				userCanManageModules: false,
+				isSubscriber: false,
+				userCanPublish: true,
+				isModuleActivated: m => 'publicize' === m
+			} );
+			expect( shallow( <NavigationSettings { ...publicizeProps } /> ).find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing', 'Sharing' ].includes( item ) ) ).to.be.true;
 		} );
 
 		it( 'do not show Sharing to contributors', () => {

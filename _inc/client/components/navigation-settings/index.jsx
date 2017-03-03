@@ -25,7 +25,7 @@ import {
 import {
 	userCanManageModules as _userCanManageModules,
 	userIsSubscriber as _userIsSubscriber,
-	userIsContributor
+	userCanPublish
 } from 'state/initial-state';
 import { getSiteConnectionStatus } from 'state/connection';
 import { isModuleActivated } from 'state/modules';
@@ -98,9 +98,8 @@ export const NavigationSettings = React.createClass( {
 	},
 
 	render: function() {
-		let navItems;
-
-		const publicizeTab = (
+		let navItems,
+			publicizeTab = (
 			( this.props.isModuleActivated( 'publicize' ) || this.props.isModuleActivated( 'sharedaddy' ) ) && (
 				<NavItem
 					path={ true === this.props.siteConnectionStatus
@@ -148,6 +147,9 @@ export const NavigationSettings = React.createClass( {
 		} else if ( this.props.isSubscriber ) {
 			navItems = false;
 		} else {
+			if ( ! this.props.isModuleActivated( 'publicize' ) || ! this.props.userCanPublish ) {
+				publicizeTab = '';
+			}
 			navItems = (
 				<NavTabs selectedText={ this.props.route.name }>
 					<NavItem
@@ -157,7 +159,7 @@ export const NavigationSettings = React.createClass( {
 					</NavItem>
 					{
 						// Give only Publicize to non admin users
-						this.props.isModuleActivated( 'publicize' ) && ! this.props.isContributor && publicizeTab
+						publicizeTab
 					}
 				</NavTabs>
 			);
@@ -183,7 +185,7 @@ export default connect(
 		return {
 			userCanManageModules: _userCanManageModules( state ),
 			isSubscriber: _userIsSubscriber( state ),
-			isContributor: userIsContributor( state ),
+			userCanPublish: userCanPublish( state ),
 			siteConnectionStatus: getSiteConnectionStatus( state ),
 			isModuleActivated: module => isModuleActivated( state, module ),
 			searchHasFocus: _getSearchFocus( state )
@@ -193,6 +195,6 @@ export default connect(
 		return {
 			searchForTerm: ( term ) => dispatch( filterSearch( term ) ),
 			onSearchFocus: ( hasFocus ) => dispatch( focusSearch( hasFocus ) )
-		}
+		};
 	}
 )( NavigationSettings );
