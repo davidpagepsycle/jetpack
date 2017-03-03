@@ -72,8 +72,28 @@ describe( 'NavigationSettings', () => {
 
 		const wrapper = shallow( <NavigationSettings { ...testProps } /> );
 
-		it( 'renders tabs with Writing', () => {
-			expect( wrapper.find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing' ].includes( item ) ) ).to.be.true;
+		it( 'renders tabs with Writing and Sharing', () => {
+			expect( wrapper.find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing', 'Sharing' ].includes( item ) ) ).to.be.true;
+		} );
+
+		it( 'show only Writing if Publicize is disabled', () => {
+			const publicizeProps = Object.assign( {}, testProps, {
+				userCanManageModules: false,
+				isSubscriber: false,
+				isContributor: false,
+				isModuleActivated: m => 'sharedaddy' === m
+			} );
+			expect( shallow( <NavigationSettings { ...publicizeProps } /> ).find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing' ].includes( item ) ) ).to.be.true;
+		} );
+
+		it( 'do not show Sharing to contributors', () => {
+			const publicizeProps = Object.assign( {}, testProps, {
+				userCanManageModules: false,
+				isSubscriber: false,
+				isContributor: true,
+				isModuleActivated: m => 'sharedaddy' === m
+			} );
+			expect( shallow( <NavigationSettings { ...publicizeProps } /> ).find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing' ].includes( item ) ) ).to.be.true;
 		} );
 
 		it( 'has /writing as selected navigation item, accessing through /settings', () => {
@@ -84,6 +104,7 @@ describe( 'NavigationSettings', () => {
 		it( 'does not display Search', () => {
 			expect( wrapper.find( 'Search' ) ).to.have.length( 0 );
 		} );
+
 	} );
 
 	describe( 'for an Admin user', () => {
@@ -128,7 +149,7 @@ describe( 'NavigationSettings', () => {
 		} );
 
 		it( 'is rendered if Sharing is active', () => {
-			const wrapper = shallow( <NavigationSettings { ...testProps } isModuleActivated={ m => 'sharing' === m } /> );
+			const wrapper = shallow( <NavigationSettings { ...testProps } isModuleActivated={ m => 'sharedaddy' === m } /> );
 			expect( wrapper.find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'General', 'Writing', 'Discussion', 'Traffic', 'Security', 'Sharing' ].includes( item ) ) ).to.be.true;
 		} );
 
