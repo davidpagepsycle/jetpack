@@ -84,7 +84,7 @@ const Composing = moduleSettingsForm(
 		 * @returns {object} React element object
 		 */
 		getToggle( setting, label ) {
-			return(
+			return (
 				<CompactFormToggle
 					checked={ this.state[ setting ] }
 					disabled={ ! this.props.getOptionValue( 'after-the-deadline' ) || this.props.isUnavailableInDevMode( 'after-the-deadline' ) || this.props.isSavingAnyOption( setting ) }
@@ -97,7 +97,7 @@ const Composing = moduleSettingsForm(
 		},
 
 		getAtdSettings() {
-			let ignoredPhrases = this.props.getOptionValue( 'ignored_phrases' );
+			const ignoredPhrases = this.props.getOptionValue( 'ignored_phrases' );
 			return (
 				<div>
 					<FormFieldset>
@@ -173,17 +173,17 @@ const Composing = moduleSettingsForm(
 		render() {
 			// If we don't have any element to show, return early
 			if (
-				! this.props.isModuleFound( 'markdown' )
-				&& ! this.props.isModuleFound( 'after-the-deadline' )
+				! this.props.isModuleFound( 'markdown' ) &&
+				! this.props.isModuleFound( 'after-the-deadline' )
 			) {
 				return null;
 			}
 
-			let markdown = this.props.module( 'markdown' ),
+			const markdown = this.props.module( 'markdown' ),
 				atd = this.props.module( 'after-the-deadline' );
 
-			let markdownSettings = (
-				<SettingsGroup support={ markdown.learn_more_button }>
+			const markdownSettings = (
+				<SettingsGroup module={ markdown }>
 					<FormFieldset>
 						<ModuleToggle
 							slug="markdown"
@@ -198,7 +198,7 @@ const Composing = moduleSettingsForm(
 				</SettingsGroup>
 			);
 
-			let atdSettings = (
+			const atdSettings = (
 				<SettingsGroup hasChild disableInDevMode module={ atd }>
 					<ModuleToggle slug="after-the-deadline"
 							activated={ this.props.getOptionValue( 'after-the-deadline' ) }
@@ -215,7 +215,7 @@ const Composing = moduleSettingsForm(
 			);
 
 			return (
-				<SettingsCard header={ __( 'Composing', { context: 'Settings header' } ) } { ...this.props }>
+				<SettingsCard header={ __( 'Composing', { context: 'Settings header' } ) } { ...this.props } module="composing">
 					{ this.props.isModuleFound( 'markdown' ) && markdownSettings }
 					{ this.props.isModuleFound( 'after-the-deadline' ) && atdSettings }
 				</SettingsCard>
@@ -229,6 +229,6 @@ export default connect(
 		return {
 			module: ( module_name ) => getModule( state, module_name ),
 			isModuleFound: ( module_name ) => _isModuleFound( state, module_name )
-		}
+		};
 	}
 )( Composing );
