@@ -34,7 +34,8 @@ describe( 'NavigationSettings', () => {
 		isModuleActivated: () => true,
 		siteConnectionStatus: true,
 		siteRawUrl: 'example.org',
-		siteAdminUrl: 'https://example.org/wp-admin/'
+		siteAdminUrl: 'https://example.org/wp-admin/',
+		isLinked: true
 	};
 
 	describe( 'initially', () => {
@@ -86,14 +87,13 @@ describe( 'NavigationSettings', () => {
 			expect( shallow( <NavigationSettings { ...publicizeProps } /> ).find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing' ].includes( item ) ) ).to.be.true;
 		} );
 
-		it( 'show Sharing if Publicize is active', () => {
-			const publicizeProps = Object.assign( {}, testProps, {
-				userCanManageModules: false,
-				isSubscriber: false,
-				userCanPublish: true,
-				isModuleActivated: m => 'publicize' === m
-			} );
-			expect( shallow( <NavigationSettings { ...publicizeProps } /> ).find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing', 'Sharing' ].includes( item ) ) ).to.be.true;
+		it( 'has /writing as selected navigation item, accessing through /settings', () => {
+			expect( wrapper.find( 'NavItem' ).get( 0 ).props.selected ).to.be.true;
+			expect( wrapper.find( 'NavItem' ).get( 0 ).props.path ).to.equal( '#writing' );
+		} );
+
+		it( 'does not display Search', () => {
+			expect( wrapper.find( 'Search' ) ).to.have.length( 0 );
 		} );
 
 		it( 'do not show Sharing to contributors', () => {
@@ -106,13 +106,23 @@ describe( 'NavigationSettings', () => {
 			expect( shallow( <NavigationSettings { ...publicizeProps } /> ).find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing' ].includes( item ) ) ).to.be.true;
 		} );
 
-		it( 'has /writing as selected navigation item, accessing through /settings', () => {
-			expect( wrapper.find( 'NavItem' ).get( 0 ).props.selected ).to.be.true;
-			expect( wrapper.find( 'NavItem' ).get( 0 ).props.path ).to.equal( '#writing' );
-		} );
+		describe( 'if Publicize is active', () => {
 
-		it( 'does not display Search', () => {
-			expect( wrapper.find( 'Search' ) ).to.have.length( 0 );
+			let publicizeProps = Object.assign( {}, testProps, {
+				userCanManageModules: false,
+				isSubscriber: false,
+				userCanPublish: true,
+				isModuleActivated: m => 'publicize' === m
+			} );
+			it( 'show Sharing if user is linked', () => {
+				expect( shallow( <NavigationSettings { ...publicizeProps } /> ).find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing', 'Sharing' ].includes( item ) ) ).to.be.true;
+			} );
+
+			it( 'do not show Sharing if user is unlinked', () => {
+				publicizeProps.isLinked = false;
+				expect( shallow( <NavigationSettings { ...publicizeProps } /> ).find( 'NavItem' ).children().nodes.filter( item => 'string' === typeof item ).every( item => [ 'Writing' ].includes( item ) ) ).to.be.true;
+			} );
+
 		} );
 
 	} );

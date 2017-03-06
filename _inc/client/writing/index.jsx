@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
  */
 import { getModule } from 'state/modules';
 import { getSettings } from 'state/settings';
-import { isDevMode, isUnavailableInDevMode } from 'state/connection';
+import { isDevMode, isUnavailableInDevMode, isCurrentUserLinked } from 'state/connection';
 import { isModuleFound as _isModuleFound } from 'state/search';
 import QuerySite from 'components/data/query-site';
 import Composing from './composing';
@@ -29,7 +29,7 @@ export const Writing = React.createClass( {
 			isUnavailableInDevMode: this.props.isUnavailableInDevMode
 		};
 
-		let found = [
+		const found = [
 			'markdown',
 			'after-the-deadline',
 			'custom-content-types',
@@ -55,7 +55,7 @@ export const Writing = React.createClass( {
 				<Media { ...commonProps } />
 				<CustomContentTypes { ...commonProps } />
 				<ThemeEnhancements { ...commonProps } />
-				<PostByEmail { ...commonProps } />
+				<PostByEmail { ...commonProps } isLinked={ this.props.isLinked } />
 			</div>
 		);
 	}
@@ -68,7 +68,8 @@ export default connect(
 			settings: getSettings( state ),
 			isDevMode: isDevMode( state ),
 			isUnavailableInDevMode: module_name => isUnavailableInDevMode( state, module_name ),
+			isLinked: isCurrentUserLinked( state ),
 			isModuleFound: ( module_name ) => _isModuleFound( state, module_name )
-		}
+		};
 	}
 )( Writing );

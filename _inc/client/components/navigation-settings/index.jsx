@@ -9,6 +9,7 @@ import NavItem from 'components/section-nav/item';
 import Search from 'components/search';
 import { translate as __ } from 'i18n-calypso';
 import trim from 'lodash/trim';
+import noop from 'lodash/noop';
 import analytics from 'lib/analytics';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
@@ -27,7 +28,7 @@ import {
 	userIsSubscriber as _userIsSubscriber,
 	userCanPublish
 } from 'state/initial-state';
-import { getSiteConnectionStatus } from 'state/connection';
+import { getSiteConnectionStatus, isCurrentUserLinked } from 'state/connection';
 import { isModuleActivated } from 'state/modules';
 
 export const NavigationSettings = React.createClass( {
@@ -147,7 +148,7 @@ export const NavigationSettings = React.createClass( {
 		} else if ( this.props.isSubscriber ) {
 			navItems = false;
 		} else {
-			if ( ! this.props.isModuleActivated( 'publicize' ) || ! this.props.userCanPublish ) {
+			if ( ! this.props.isModuleActivated( 'publicize' ) || ! this.props.userCanPublish || ! this.props.isLinked ) {
 				publicizeTab = '';
 			}
 			navItems = (
@@ -172,12 +173,32 @@ export const NavigationSettings = React.createClass( {
 					{ this.maybeShowSearch() }
 				</SectionNav>
 			</div>
-		)
+		);
 	}
 } );
 
 NavigationSettings.contextTypes = {
 	router: React.PropTypes.object.isRequired
+};
+
+NavigationSettings.propTypes = {
+	userCanManageModules: React.PropTypes.bool.isRequired,
+	isSubscriber: React.PropTypes.bool.isRequired,
+	userCanPublish: React.PropTypes.bool.isRequired,
+	isLinked: React.PropTypes.bool.isRequired,
+	siteConnectionStatus: React.PropTypes.bool.isRequired,
+	isModuleActivated: React.PropTypes.func.isRequired,
+	searchHasFocus: React.PropTypes.bool.isRequired
+};
+
+NavigationSettings.defaultProps = {
+	userCanManageModules: false,
+	isSubscriber: false,
+	userCanPublish: false,
+	isLinked: false,
+	siteConnectionStatus: false,
+	isModuleActivated: noop,
+	searchHasFocus: false
 };
 
 export default connect(
@@ -186,6 +207,7 @@ export default connect(
 			userCanManageModules: _userCanManageModules( state ),
 			isSubscriber: _userIsSubscriber( state ),
 			userCanPublish: userCanPublish( state ),
+			isLinked: isCurrentUserLinked( state ),
 			siteConnectionStatus: getSiteConnectionStatus( state ),
 			isModuleActivated: module => isModuleActivated( state, module ),
 			searchHasFocus: _getSearchFocus( state )
