@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
  */
 import { getModule } from 'state/modules';
 import { getSettings } from 'state/settings';
+import { userCanManageModules } from 'state/initial-state';
 import { isDevMode, isUnavailableInDevMode, isCurrentUserLinked } from 'state/connection';
 import { isModuleFound as _isModuleFound } from 'state/search';
 import QuerySite from 'components/data/query-site';
@@ -51,11 +52,11 @@ export const Writing = React.createClass( {
 		return (
 			<div>
 				<QuerySite />
-				<Composing { ...commonProps } />
+				<Composing { ...commonProps } userCanManageModules={ this.props.userCanManageModules } />
 				<Media { ...commonProps } />
 				<CustomContentTypes { ...commonProps } />
 				<ThemeEnhancements { ...commonProps } />
-				<PostByEmail { ...commonProps } isLinked={ this.props.isLinked } />
+				<PostByEmail { ...commonProps } isLinked={ this.props.isLinked } userCanManageModules={ this.props.userCanManageModules } />
 			</div>
 		);
 	}
@@ -69,6 +70,7 @@ export default connect(
 			isDevMode: isDevMode( state ),
 			isUnavailableInDevMode: module_name => isUnavailableInDevMode( state, module_name ),
 			isLinked: isCurrentUserLinked( state ),
+			userCanManageModules: userCanManageModules( state ),
 			isModuleFound: ( module_name ) => _isModuleFound( state, module_name )
 		};
 	}

@@ -200,14 +200,25 @@ const Composing = moduleSettingsForm(
 
 			const atdSettings = (
 				<SettingsGroup hasChild disableInDevMode module={ atd }>
-					<ModuleToggle slug="after-the-deadline"
-							activated={ this.props.getOptionValue( 'after-the-deadline' ) }
-							toggling={ this.props.isSavingAnyOption( 'after-the-deadline' ) }
-							toggleModule={ this.props.toggleModuleNow }>
-						<span className="jp-form-toggle-explanation">
-							{ atd.description }
-						</span>
-					</ModuleToggle>
+					{
+						this.props.userCanManageModules
+							? (
+								<ModuleToggle
+									slug="after-the-deadline"
+									activated={ this.props.getOptionValue( 'after-the-deadline' ) }
+									toggling={ this.props.isSavingAnyOption( 'after-the-deadline' ) }
+									toggleModule={ this.props.toggleModuleNow }>
+									<span className="jp-form-toggle-explanation">
+										{ atd.description }
+									</span>
+								</ModuleToggle>
+							)
+							: (
+								<span className="jp-form-toggle-explanation">
+									{ atd.description }
+								</span>
+							)
+					}
 					<FormFieldset>
 						<InlineExpand label={ __( 'Advanced Options' ) }>{ this.getAtdSettings() }</InlineExpand>
 					</FormFieldset>
